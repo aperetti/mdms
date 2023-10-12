@@ -4,16 +4,11 @@ CREATE TABLE MeterReads (
     ReadTimestamp DateTime64(3),
     RawReading Decimal(15,6),
     Status Enum8('Unvalidated' = 0, 'Valid' = 1, 'Estimated' = 2, 'Invalid' = 3, 'Edited' = 4),
-    Flag Enum64()
-    Version UInt16,
+    ChangeMethod Enum8('System' = 0, 'Manual' = 1),
+    Flag UInt64,
     LastEdited DateTime64(3),
     LastEditedBy String,
-    ValidationMetadata Nested(
-        RuleName String,
-        RuleOutcome Enum8('Pass' = 0, 'Fail' = 1)
-    ),
-    INDEX MeterID ReadTimestamp TYPE minmax GRANULARITY 1
 )
 ENGINE = MergeTree()
-PARTITION BY toYYYYMM(ReadTimestamp)
-ORDER BY (MeterID, ReadTimestamp, Version);
+PRIMARY KEY (MeterID, ReadTimestamp, LastEdited)
+ORDER BY (MeterID, ReadTimestamp, LastEdited);
